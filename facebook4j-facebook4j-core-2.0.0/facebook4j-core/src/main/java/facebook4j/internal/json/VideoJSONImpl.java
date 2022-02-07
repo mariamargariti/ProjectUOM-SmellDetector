@@ -76,60 +76,82 @@ import static facebook4j.internal.util.z_F4JInternalParseUtil.*;
     private void init(JSONObject json) throws FacebookException {
         try {
             id = getRawString("id", json);
-            if (!json.isNull("from")) {
-                JSONObject fromJSONObject = json.getJSONObject("from");
-                from = new CategoryJSONImpl(fromJSONObject);
-            }
-            if (!json.isNull("tags")) {
-                JSONObject tagsJSONObject = json.getJSONObject("tags");
-                JSONArray tagsJSONArray = tagsJSONObject.getJSONArray("data");
-                final int size = tagsJSONArray.length();
-                tags = new ArrayList<Tag>(size);
-                for (int i = 0; i < size; i++) {
-                    tags.add(new TagJSONImpl(tagsJSONArray.getJSONObject(i)));
-                }
-            } else {
-                tags = Collections.emptyList();
-            }
+            
+            extracted1(json);
+            extracted2(json);
+            
             name = getRawString("name", json);
             description = getRawString("description", json);
             picture = getURL("picture", json);
             embedHtml = getRawString("embed_html", json);
-            if (!json.isNull("format")) {
-                JSONArray formatJSONArray = json.getJSONArray("format");
-                final int size = formatJSONArray.length();
-                format = new ArrayList<Format>(size);
-                for (int i = 0; i < size; i++) {
-                    format.add(new FormatJSONImpl(formatJSONArray.getJSONObject(i)));
-                }
-            } else {
-                format = Collections.emptyList();
-            }
+            
+            extracted3(json);
+            
             icon = getURL("icon", json);
             source = getURL("source", json);
             createdTime = getISO8601Datetime("created_time", json);
             updatedTime = getISO8601Datetime("updated_time", json);
-            if (!json.isNull("comments")) {
-                JSONObject commentsJSONObject = json.getJSONObject("comments");
-                if (!commentsJSONObject.isNull("data")) {
-                    JSONArray list = commentsJSONObject.getJSONArray("data");
-                    final int size = list.length();
-                    comments = new PagableListImpl<Comment>(size, json.getJSONObject("comments"));
-                    for (int i = 0; i < size; i++) {
-                        CommentJSONImpl comment = new CommentJSONImpl(list.getJSONObject(i));
-                        comments.add(comment);
-                    }
-                } else {
-                    comments = new PagableListImpl<Comment>(1, commentsJSONObject);
-                }
-            } else {
-                comments = new PagableListImpl<Comment>(0);
-            }
+            
+            extracted4(json);
+            
             link = getURL("link", json);
         } catch (JSONException jsone) {
             throw new FacebookException(jsone.getMessage(), jsone);
         }
     }
+
+	public void extracted4(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("comments")) {
+		    JSONObject commentsJSONObject = json.getJSONObject("comments");
+		    if (!commentsJSONObject.isNull("data")) {
+		        JSONArray list = commentsJSONObject.getJSONArray("data");
+		        final int size = list.length();
+		        comments = new PagableListImpl<Comment>(size, json.getJSONObject("comments"));
+		        for (int i = 0; i < size; i++) {
+		            CommentJSONImpl comment = new CommentJSONImpl(list.getJSONObject(i));
+		            comments.add(comment);
+		        }
+		    } else {
+		        comments = new PagableListImpl<Comment>(1, commentsJSONObject);
+		    }
+		} else {
+		    comments = new PagableListImpl<Comment>(0);
+		}
+	}
+
+	public void extracted3(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("format")) {
+		    JSONArray formatJSONArray = json.getJSONArray("format");
+		    final int size = formatJSONArray.length();
+		    format = new ArrayList<Format>(size);
+		    for (int i = 0; i < size; i++) {
+		        format.add(new FormatJSONImpl(formatJSONArray.getJSONObject(i)));
+		    }
+		} else {
+		    format = Collections.emptyList();
+		}
+	}
+
+	public void extracted2(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("tags")) {
+		    JSONObject tagsJSONObject = json.getJSONObject("tags");
+		    JSONArray tagsJSONArray = tagsJSONObject.getJSONArray("data");
+		    final int size = tagsJSONArray.length();
+		    tags = new ArrayList<Tag>(size);
+		    for (int i = 0; i < size; i++) {
+		        tags.add(new TagJSONImpl(tagsJSONArray.getJSONObject(i)));
+		    }
+		} else {
+		    tags = Collections.emptyList();
+		}
+	}
+
+	public void extracted1(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("from")) {
+		    JSONObject fromJSONObject = json.getJSONObject("from");
+		    from = new CategoryJSONImpl(fromJSONObject);
+		}
+	}
 
     public String getId() {
         return id;
