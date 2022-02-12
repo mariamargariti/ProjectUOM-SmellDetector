@@ -40,29 +40,23 @@ SOFTWARE.
  */
 public class JSONTokener {
 
-    private int 	character;
-	private boolean eof;
-    private int 	index;
-    private int 	line;
-    private char 	previous;
-    private Reader 	reader;
-    private boolean usePrevious;
+    protected JSONTokenerData data = new JSONTokenerData();
 
 
-    /**
+	/**
      * Construct a JSONTokener from a Reader.
      *
      * @param reader     A reader.
      */
     public JSONTokener(Reader reader) {
-        this.reader = reader.markSupported() ? 
+        this.data.reader = reader.markSupported() ? 
         		reader : new BufferedReader(reader);
-        this.eof = false;
-        this.usePrevious = false;
-        this.previous = 0;
-        this.index = 0;
-        this.character = 1;
-        this.line = 1;
+        this.data.eof = false;
+        this.data.usePrevious = false;
+        this.data.previous = 0;
+        this.data.index = 0;
+        this.data.character = 1;
+        this.data.line = 1;
     }
     
     
@@ -90,13 +84,13 @@ public class JSONTokener {
      * the next number or identifier.
      */
     public void back() throws JSONException {
-        if (usePrevious || index <= 0) {
+        if (data.usePrevious || data.index <= 0) {
             throw new JSONException("Stepping back two steps is not supported");
         }
-        this.index -= 1;
-        this.character -= 1;
-        this.usePrevious = true;
-        this.eof = false;
+        this.data.index -= 1;
+        this.data.character -= 1;
+        this.data.usePrevious = true;
+        this.data.eof = false;
     }
 
 
@@ -120,7 +114,7 @@ public class JSONTokener {
     }
     
     public boolean end() {
-    	return eof && !usePrevious;    	
+    	return data.eof && !data.usePrevious;    	
     }
 
 
@@ -146,33 +140,33 @@ public class JSONTokener {
      */
     public char next() throws JSONException {
         int c;
-        if (this.usePrevious) {
-        	this.usePrevious = false;
-            c = this.previous;
+        if (this.data.usePrevious) {
+        	this.data.usePrevious = false;
+            c = this.data.previous;
         } else {
 	        try {
-	            c = this.reader.read();
+	            c = this.data.reader.read();
 	        } catch (IOException exception) {
 	            throw new JSONException(exception);
 	        }
 	
 	        if (c <= 0) { // End of stream
-	        	this.eof = true;
+	        	this.data.eof = true;
 	        	c = 0;
 	        } 
         }
-    	this.index += 1;
-    	if (this.previous == '\r') {
-    		this.line += 1;
-    		this.character = c == '\n' ? 0 : 1;
+    	this.data.index += 1;
+    	if (this.data.previous == '\r') {
+    		this.data.line += 1;
+    		this.data.character = c == '\n' ? 0 : 1;
     	} else if (c == '\n') {
-    		this.line += 1;
-    		this.character = 0;
+    		this.data.line += 1;
+    		this.data.character = 0;
     	} else {
-    		this.character += 1;
+    		this.data.character += 1;
     	}
-    	this.previous = (char) c;
-        return this.previous;
+    	this.data.previous = (char) c;
+        return this.data.previous;
     }
 
 
@@ -399,17 +393,17 @@ public class JSONTokener {
     public char skipTo(char to) throws JSONException {
         char c;
         try {
-            int startIndex = this.index;
-            int startCharacter = this.character;
-            int startLine = this.line;
-            reader.mark(Integer.MAX_VALUE);
+            int startIndex = this.data.index;
+            int startCharacter = this.data.character;
+            int startLine = this.data.line;
+            data.reader.mark(Integer.MAX_VALUE);
             do {
                 c = next();
                 if (c == 0) {
-                    reader.reset();
-                    this.index = startIndex;
-                    this.character = startCharacter;
-                    this.line = startLine;
+                    data.reader.reset();
+                    this.data.index = startIndex;
+                    this.data.character = startCharacter;
+                    this.data.line = startLine;
                     return c;
                 }
             } while (c != to);
@@ -440,7 +434,7 @@ public class JSONTokener {
      */
     @Override
     public String toString() {
-        return " at " + index + " [character " + this.character + " line " + 
-        	this.line + "]";
+        return " at " + data.index + " [character " + this.data.character + " line " + 
+        	this.data.line + "]";
     }
 }
