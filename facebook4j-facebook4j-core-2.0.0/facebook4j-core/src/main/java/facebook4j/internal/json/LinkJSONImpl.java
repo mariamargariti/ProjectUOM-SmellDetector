@@ -72,58 +72,80 @@ import static facebook4j.internal.util.z_F4JInternalParseUtil.*;
     private void init(JSONObject json) throws FacebookException {
         try {
             id = getRawString("id", json);
-            if (!json.isNull("from")) {
-                JSONObject fromJSONObject = json.getJSONObject("from");
-                from = new IdNameEntityJSONImpl(fromJSONObject);
-            }
+           
+            extracted3(json);
+           
             link = getRawString("link", json);
             name = getRawString("name", json);
-            if (!json.isNull("likes")) {
-                JSONObject likesJSONObject = json.getJSONObject("likes");
-                if (!likesJSONObject.isNull("data")) {
-                    JSONArray list = likesJSONObject.getJSONArray("data");
-                    final int size = list.length();
-                    likes = new PagableListImpl<Like>(size, likesJSONObject);
-                    for (int i = 0; i < size; i++) {
-                        LikeJSONImpl like = new LikeJSONImpl(list.getJSONObject(i));
-                        likes.add(like);
-                    }
-                } else {
-                    likes = new PagableListImpl<Like>(1, likesJSONObject);
-                }
-            } else {
-                likes = new PagableListImpl<Like>(0);
-            }
-            if (!json.isNull("comments")) {
-                JSONObject commentsJSONObject = json.getJSONObject("comments");
-                if (!commentsJSONObject.isNull("data")) {
-                    JSONArray list = commentsJSONObject.getJSONArray("data");
-                    final int size = list.length();
-                    comments = new PagableListImpl<Comment>(size, commentsJSONObject);
-                    for (int i = 0; i < size; i++) {
-                        CommentJSONImpl tag = new CommentJSONImpl(list.getJSONObject(i));
-                        comments.add(tag);
-                    }
-                } else {
-                    comments = new PagableListImpl<Comment>(1, commentsJSONObject);
-                }
-            } else {
-                comments = new PagableListImpl<Comment>(0);
-            }
+            
+            extracted(json);
+            extracted1(json);
+           
             description = getRawString("description", json);
             icon = getRawString("icon", json);
             picture = getRawString("picture", json);
             message = getRawString("message", json);
             createdTime = getISO8601Datetime("created_time", json);
             type = getRawString("type", json);
-            if (!json.isNull("privacy")) {
-                JSONObject privacyJSONObject = json.getJSONObject("privacy");
-                privacy = new PrivacyJSONImpl(privacyJSONObject);
-            }
+           
+            extracted2(json);
+            
         } catch (JSONException jsone) {
             throw new FacebookException(jsone.getMessage(), jsone);
         }
     }
+
+	public void extracted3(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("from")) {
+		    JSONObject fromJSONObject = json.getJSONObject("from");
+		    from = new IdNameEntityJSONImpl(fromJSONObject);
+		}
+	}
+
+	public void extracted2(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("privacy")) {
+		    JSONObject privacyJSONObject = json.getJSONObject("privacy");
+		    privacy = new PrivacyJSONImpl(privacyJSONObject);
+		}
+	}
+
+	public void extracted1(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("comments")) {
+		    JSONObject commentsJSONObject = json.getJSONObject("comments");
+		    if (!commentsJSONObject.isNull("data")) {
+		        JSONArray list = commentsJSONObject.getJSONArray("data");
+		        final int size = list.length();
+		        comments = new PagableListImpl<Comment>(size, commentsJSONObject);
+		        for (int i = 0; i < size; i++) {
+		            CommentJSONImpl tag = new CommentJSONImpl(list.getJSONObject(i));
+		            comments.add(tag);
+		        }
+		    } else {
+		        comments = new PagableListImpl<Comment>(1, commentsJSONObject);
+		    }
+		} else {
+		    comments = new PagableListImpl<Comment>(0);
+		}
+	}
+
+	public void extracted(JSONObject json) throws JSONException, FacebookException {
+		if (!json.isNull("likes")) {
+		    JSONObject likesJSONObject = json.getJSONObject("likes");
+		    if (!likesJSONObject.isNull("data")) {
+		        JSONArray list = likesJSONObject.getJSONArray("data");
+		        final int size = list.length();
+		        likes = new PagableListImpl<Like>(size, likesJSONObject);
+		        for (int i = 0; i < size; i++) {
+		            LikeJSONImpl like = new LikeJSONImpl(list.getJSONObject(i));
+		            likes.add(like);
+		        }
+		    } else {
+		        likes = new PagableListImpl<Like>(1, likesJSONObject);
+		    }
+		} else {
+		    likes = new PagableListImpl<Like>(0);
+		}
+	}
 
     public String getId() {
         return id;
