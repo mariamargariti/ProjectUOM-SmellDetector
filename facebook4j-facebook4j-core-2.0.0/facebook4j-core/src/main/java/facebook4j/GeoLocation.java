@@ -31,8 +31,6 @@ import facebook4j.internal.org.json.JSONObject;
  */
 public class GeoLocation implements java.io.Serializable {
 
-    protected double latitude;
-    protected double longitude;
     private static final long serialVersionUID = -4847567157651889935L;
 
     /**
@@ -42,8 +40,8 @@ public class GeoLocation implements java.io.Serializable {
      * @param longitude the longitude
      */
     public GeoLocation(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.data.latitude = latitude;
+        this.data.longitude = longitude;
     }
     
     /* For serialization purposes only. */
@@ -57,7 +55,7 @@ public class GeoLocation implements java.io.Serializable {
      * @return the latitude
      */
     public double getLatitude() {
-        return latitude;
+        return data.latitude;
     }
 
     /**
@@ -66,20 +64,20 @@ public class GeoLocation implements java.io.Serializable {
      * @return the longitude
      */
     public double getLongitude() {
-        return longitude;
+        return data.longitude;
     }
     
     public String asParameterString() {
-        return latitude + "," + longitude;
+        return data.latitude + "," + data.longitude;
     }
 
-    private JSONObject json = null;
+    protected GeoLocationData data = new GeoLocationData(null);
 
-    public JSONObject asJSONObject() {
-        if (json == null) {
-            json = new JSONObject(this);
+	public JSONObject asJSONObject() {
+        if (data.json == null) {
+            data.json = new JSONObject(this);
         }
-        return json;
+        return data.json;
     }
     
     public String asJSONString() {
@@ -93,8 +91,8 @@ public class GeoLocation implements java.io.Serializable {
 
         GeoLocation that = (GeoLocation) o;
 
-        if (Double.compare(that.getLatitude(), latitude) != 0) return false;
-        if (Double.compare(that.getLongitude(), longitude) != 0) return false;
+        if (Double.compare(that.getLatitude(), data.latitude) != 0) return false;
+        if (Double.compare(that.getLongitude(), data.longitude) != 0) return false;
 
         return true;
     }
@@ -103,9 +101,9 @@ public class GeoLocation implements java.io.Serializable {
     public int hashCode() {
         int result;
         long temp;
-        temp = latitude != +0.0d ? Double.doubleToLongBits(latitude) : 0L;
+        temp = data.latitude != +0.0d ? Double.doubleToLongBits(data.latitude) : 0L;
         result = (int) (temp ^ (temp >>> 32));
-        temp = longitude != +0.0d ? Double.doubleToLongBits(longitude) : 0L;
+        temp = data.longitude != +0.0d ? Double.doubleToLongBits(data.longitude) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
@@ -113,8 +111,8 @@ public class GeoLocation implements java.io.Serializable {
     @Override
     public String toString() {
         return "GeoLocation{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
+                "latitude=" + data.latitude +
+                ", longitude=" + data.longitude +
                 '}';
     }
 }
